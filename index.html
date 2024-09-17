@@ -3,28 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-time Text Editor</title>
+  <title>ddot has a 1 inch grinch</title>
   <style>
     #editor {
       width: 100%;
+      height: 200px;
+    }
+    #display {
+      width: 100%;
       height: 500px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow: auto;
     }
   </style>
 </head>
 <body>
-  <h1>ddot likes kids</h1>
+  <h1>Real-time Text Editor</h1>
+
   <textarea id="editor"></textarea>
+  <div id="display"></div>
 
   <script src="https://cdn.socket.io/4.2.1/socket.io.min.js"></script>
   <script>
     const socket = io();
-
     const editor = document.getElementById('editor');
+    const display = document.getElementById('display');
 
     socket.on('connect', () => {
       console.log('Connected to server');
       socket.on('updateText', (data) => {
-        editor.value = data;
+        display.innerHTML += <p>${data}</p>;
       });
     });
 
