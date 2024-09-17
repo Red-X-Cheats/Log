@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collaborative Text Editor</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Text Editor</title>
+  <style>
+    #editor {
+      width: 100%;
+      height: 500px;
+    }
+  </style>
 </head>
 <body>
-    <textarea id="editor" cols="80" rows="20"></textarea>
-    <script src="socket.io/socket.io.min.js"></script>
-    <script src="scripts.js"></script>
+  <h1>Real-time Text Editor</h1>
+  <textarea id="editor"></textarea>
+
+  <script src="https://cdn.socket.io/4.2.1/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+
+    const editor = document.getElementById('editor');
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      socket.on('updateText', (data) => {
+        editor.value = data;
+      });
+    });
+
+    socket.emit('joinRoom', 'textEditor');
+
+    editor.addEventListener('input', (e) => {
+      socket.emit('updateText', e.target.value);
+    });
+  </script>
 </body>
 </html>
