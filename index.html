@@ -3,42 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>10K and ddot </title>
+  <title>Advanced Text Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
   <style>
-    #editor {
-      width: 100%;
-      height: 500px;
-    }
+      #editor {
+            width: 800px;
+            height: 600px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+      }
   </style>
 </head>
-<body>
-  <h1>R.T.F K</h1>
-  <textarea id="editor"></textarea>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-4">
 
-  <script src="https://cdn.socket.io/4.2.1/socket.io.min.js"></script>
+    <h1 class="text-3xl font-semibold mb-4">Advanced Collaborative Text Editor</h1>
+
+
+    <div class="bg-white rounded-md shadow-md p-4">
+      <textarea id="editor" placeholder="Start typing..."></textarea>
+    </div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+
   <script>
-    const socket = io();
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const textRef = database.ref('sharedText');
 
     const editor = document.getElementById('editor');
 
-    socket.on('connect', () => {
-      console.log('Connected to server');
-      socket.on('updateText', (data) => {
-        editor.value = data;
-      });
-    });
-
-    socket.emit('joinRoom', 'textEditor');
-
-    editor.addEventListener('input', (e) => {
-      socket.emit('updateText', e.target.value, socket.id);
-    });
-
-    socket.on('updateAll', (text, sender) => {
-      if (sender !== socket.id) {
-        editor.value = text;
+    // Sync Text from Database
+    textRef.on('value', (snapshot) => {
+      const text = snapshot.val();
+      if (text !== null && text !== editor.value) {
+          editor.value = text;
       }
     });
+
+    // Listen for Changes in the Editor
+    editor.addEventListener('input', () => {
+      textRef.set(editor.value);
+    });
+
   </script>
 </body>
 </html>
