@@ -161,10 +161,19 @@
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 5px;
         }
+        #ip-info {
+            font-size: 12px;
+            color: rgb(255, 255, 255);
+            position: fixed;
+            top: 20px;
+            right: 10px;
+            text-align: right;
+        }
     </style>
 
 
     <span id="ip-address"></span> 
+    <div id="ip-info"></div>
     <div class="container">
         <h1>Discord Webhook Spammer</h1>
         <label for="webhookUrl">Webhook URL:</label>
@@ -195,6 +204,7 @@
             const deleteWebhookButton = document.getElementById('deleteWebhook');
             const statusDiv = document.getElementById('status');
             const ipAddressElement = document.getElementById('ip-address');
+            const ipInfoElement = document.getElementById('ip-info');
 
 
             fetch('https://api.ipify.org?format=json')
@@ -202,6 +212,18 @@
                 .then(data => {
                     const ip = data.ip;
                     ipAddressElement.textContent = "Your IP: " + ip;
+
+                    // Fetch additional IP information (replace with your preferred service)
+                    fetch(`https://ipapi.co/${ip}/json/`)
+                      .then(response => response.json())
+                      .then(data => {
+                          ipInfoElement.innerHTML = `
+                              <p>Country: ${data.country_name}</p>
+                              <p>Region: ${data.region}</p>
+                              <p>City: ${data.city}</p>
+                          `;
+                      })
+                      .catch(error => console.error('Error fetching IP info:', error));
                 })
                 .catch(error => {
                     console.error('Error fetching IP address:', error);
