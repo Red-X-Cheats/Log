@@ -17,6 +17,7 @@
             margin: 0;
             padding: 0;
             transition: background-color 0.3s ease; 
+            position: relative; /* Allow positioning of children relative to this */
         }
 
         .container {
@@ -152,13 +153,18 @@
         #ip-address {
             font-size: 14px;
             color: #fff;
+            position: fixed;
+            top: 0;
+            right: 10px;
+            z-index: 9999; /* High z-index to ensure it's on top */
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
         }
     </style>
 
 
-    <header>
-        <span id="ip-address"></span> 
-    </header>
+    <span id="ip-address"></span> 
     <div class="container">
         <h1>Discord Webhook Spammer</h1>
         <label for="webhookUrl">Webhook URL:</label>
