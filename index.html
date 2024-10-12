@@ -1,49 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.1/dist/full.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+  <title>RAT Controller</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    #commands {
+      width: 500px;
+      height: 300px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #console {
+      width: 500px;
+      height: 300px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: #f0f0f0;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background-color: #3e8e41;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-r from-cyan-500 to-blue-500">
-    <div class="hero min-h-screen bg-base-200">
-        <div class="hero-content text-center">
-            <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                <div class="card-body">
-                    <h1 class="text-5xl font-bold text-center">Login</h1>
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Username</span>
-                        </label>
-                        <input type="text" placeholder="username" class="input input-bordered" id="username">
-                    </div>
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">Password</span>
-                        </label>
-                        <input type="password" placeholder="password" class="input input-bordered" id="password">
-                    </div>
-                    <div class="form-control mt-6">
-                        <button class="btn btn-primary" onclick="login()">Login</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function login() {
-            const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
-
-            if (usernameInput === 'admin' && passwordInput === 'admin') {
-                window.location.href = './dashboard.html'; 
-            } else {
-                alert('Incorrect username or password.');
-            }
-        }
-    </script>
+<body>
+  <h1>RAT Controller</h1>
+  <div id="commands">
+    <h2>Commands</h2>
+    <button onclick="sendCommand('sys_info')">System Info</button>
+    <button onclick="sendCommand('execute')">Execute Command</button>
+    <button onclick="sendCommand('download')">Download File</button>
+    <button onclick="sendCommand('upload')">Upload File</button>
+    <button onclick="sendCommand('screenshot')">Take Screenshot</button>
+  </div>
+  <div id="console">
+    <h2>Console</h2>
+    <div id="console-output"></div>
+  </div>
+  
+  <script>
+    const socket = new WebSocket('ws://localhost:8080');
+    
+    socket.onmessage = (event) => {
+      const consoleOutput = document.getElementById('console-output');
+      consoleOutput.innerText += event.data + '\n';
+    };
+    
+    function sendCommand(command) {
+      socket.send(JSON.stringify({ command }));
+    }
+  </script>
 </body>
 </html>
